@@ -2,6 +2,7 @@ from googlesearch import search
 import requests
 import re
 import csv
+import os
 import pandas as pd
 
 
@@ -12,8 +13,7 @@ class Search:
         self.result = 0
         self.headers = []
         self.final_result = []
-
-        self.File_Write_instance = CSVWriter("data.csv")
+        self.path = []    
 
     
     def get_input(self):
@@ -29,6 +29,13 @@ class Search:
             print("Error: Invalid input. Please enter a valid integer.")
         except Exception as e:
             print(f"Error: {e}")
+            
+    def get_path(self):
+        self.path = input(r"Enter the path: ")    
+            
+                
+        self.File_Write_instance = CSVWriter("data.csv",self.path)           
+            
 
     def searching(self):
         self.result=list(search(self.sentence, tld="co.in", num=self.result_number, stop=self.result_number, pause=2))
@@ -46,6 +53,7 @@ class Search:
     def run(self):
         self.get_input()
         self.get_result_number()
+        self.get_path()
         self.searching()
         self.print_result()
         self.File_Write_instance.write(self.final_result)
@@ -59,9 +67,10 @@ class Search:
 
 
 class CSVWriter:
-    def __init__(self, filename, header=None):
+    def __init__(self, filename,path, header=None):
         self.filename = filename
         self.header = header
+        self.path = path
 
     def write(self, data):
         with open(self.filename, 'w', newline='') as file:
@@ -73,7 +82,8 @@ class CSVWriter:
 
     def to_dataframe(self,list1,list2):
         df = pd.DataFrame({'Column1': list1, 'Column2': list2})
-        df.to_csv('/out.csv') 
+        #df.to_csv('out.csv') 
+        df.to_csv(os.path.join(self.path,r'out.csv'))
         return df
 
 
